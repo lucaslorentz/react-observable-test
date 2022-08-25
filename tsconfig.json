@@ -1,0 +1,17 @@
+{
+    "include": [
+        "./src/**/*"
+    ],
+    "compilerOptions": {
+        "strict": true,
+        "esModuleInterop": true,
+        "target": "es2015",
+        "moduleResolution": "node",
+        "lib": [
+            "dom",
+            "es2015",
+            "esNext"
+        ],
+        "jsx": "react-jsx"
+    }
+}
