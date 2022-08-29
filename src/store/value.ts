@@ -11,7 +11,7 @@ export interface WritableValue<V> extends Value<V> {
   [_write](value: V): void;
 }
 
-export function isValue<V>(value: Value<V> | unknown): value is Value<V> {
+export function isValue<V>(value: Value<V> | V): value is Value<V> {
   if (typeof value !== "object" || value === null) {
     return false;
   }
@@ -19,7 +19,7 @@ export function isValue<V>(value: Value<V> | unknown): value is Value<V> {
 }
 
 export function isWritableValue<V>(
-  value: Value<V> | unknown
+  value: Value<V> | V
 ): value is WritableValue<V> {
   return isValue(value) && _write in value;
 }
@@ -65,7 +65,8 @@ class FieldValue<T extends Object, F extends keyof T>
     this[_field] = field;
   }
   [_getContext]() {
-    return isValue(this[_object]) ? this[_object][_read]() : this[_object];
+    const object = this[_object];
+    return isValue(object) ? object[_read]() : object;
   }
   [_read]() {
     const context = this[_getContext]();
@@ -76,10 +77,11 @@ class FieldValue<T extends Object, F extends keyof T>
     let context = this[_getContext]();
     if (!context) {
       context = (typeof this[_field] === "number" ? [] : {}) as T;
-      if (!isWritableValue(this[_object])) {
+      const object = this[_object];
+      if (!isWritableValue(object)) {
         throw new Error("Field object is not writable");
       }
-      this[_object][_write](context);
+      object[_write](context);
     }
     context[this[_field]] = value;
   }
